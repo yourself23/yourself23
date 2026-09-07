@@ -1,0 +1,38 @@
+{
+  "name": "complete-engine-1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "broadcast-sponsored.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourself23/complete-engine-1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yourself23/complete-engine-1/issues"
+  },
+  "homepage": "https://github.com/yourself23/complete-engine-1#readme",
+  "dependencies": {
+    "@coinbase/coinbase-sdk": "^0.25.0",
+    "@tailwindcss/postcss": "^4.3.3",
+    "next": "^16.3.2",
+    "postcss": "^8.5.26",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tailwindcss": "^4.3.3",
+    "viem": "^2.55.19"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "typescript": "7.0.2"
+  }
+}
