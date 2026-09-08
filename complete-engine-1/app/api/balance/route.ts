@@ -22,7 +22,7 @@ export async function GET(req: Request) {
     }
 
     const provider = new ethers.JsonRpcProvider("https://mainnet.base.org");
-    const tokenAddress = process.env.NEXT_PUBLIC_DAI_VAULT_ADDRESS || "0x6B175474E89094C44Da98b954EedeAC495271d0F";
+    const tokenAddress = process.env.NEXT_PUBLIC_DAI_VAULT_ADDRESS || "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb";
     const contract = new ethers.Contract(tokenAddress, FULL_ERC20_ABI, provider);
 
     const [balance, decimals, symbol] = await Promise.all([
