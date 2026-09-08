@@ -5,7 +5,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { proofHash } = body;
     const chainId = process.env.NEXT_PUBLIC_CHAIN_ID || "8453";
-    const vaultAddress = process.env.NEXT_PUBLIC_DAI_VAULT_ADDRESS || "0x_PENDING_VAULT_REGISTRATION";
+    const vaultAddress = process.env.NEXT_PUBLIC_DAI_VAULT_ADDRESS || "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 
     if (!proofHash) {
       return NextResponse.json({ error: "Missing proof hash parameter" }, { status: 400 });
