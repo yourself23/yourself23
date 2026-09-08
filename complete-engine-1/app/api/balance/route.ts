@@ -35,7 +35,7 @@ export async function GET(req: Request) {
       account,
       token: tokenAddress,
       balance: balance.toString(),
-      decimals,
+      decimals: Number(decimals),
       symbol,
       chain: "Base Mainnet"
     });
