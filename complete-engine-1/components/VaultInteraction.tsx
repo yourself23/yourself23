@@ -19,17 +19,20 @@ export default function VaultInteraction() {
   const vaultAddress = process.env.NEXT_PUBLIC_STANDALONE_DAI_VAULT_ADDRESS || "0xe14225299233563d3deaaFFAaafE0CD7CC719662";
   const daiAddress = process.env.NEXT_PUBLIC_DAI_ADDRESS || "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb";
 
+  async function getSigner() {
+    const ethereum = (window as Window & { ethereum?: ethers.Eip1193Provider }).ethereum;
+    if (!ethereum) throw new Error("No crypto wallet found. Please install MetaMask or Coinbase Wallet.");
+    const provider = new ethers.BrowserProvider(ethereum);
+    return provider.getSigner();
+  }
+
   async function handleDeposit() {
     try {
-      if (!window.ethereum) throw new Error("No crypto wallet found. Please install MetaMask or Coinbase Wallet.");
       setStatus('Connecting wallet...');
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.signAsync ? await provider.getSigner() : await provider.getSigner();
-      
+      const signer = await getSigner();
       setStatus('Approving DAI...');
-      const daiContract = new ethers.Contract(daiAddress, ERC20_ABI, signer);
       const parsedAmount = ethers.parseUnits(amount || "0", 18);
-      
+      const daiContract = new ethers.Contract(daiAddress, ERC20_ABI, signer);
       const approveTx = await daiContract.approve(vaultAddress, parsedAmount);
       await approveTx.wait();
 
@@ -38,8 +41,24 @@ export default function VaultInteraction() {
       const address = await signer.getAddress();
       const depositTx = await vaultContract.deposit(parsedAmount, address);
       await depositTx.wait();
-
       setStatus('Deposit successful!');
+    } catch (err: any) {
+      console.error(err);
+      setStatus(`Error: ${err.reason || err.message}`);
+    }
+  }
+
+  async function handleWithdraw() {
+    try {
+      setStatus('Connecting wallet...');
+      const signer = await getSigner();
+      const address = await signer.getAddress();
+      const parsedShares = ethers.parseUnits(amount || "0", 18);
+      setStatus('Withdrawing from Vault...');
+      const vaultContract = new ethers.Contract(vaultAddress, VAULT_ABI, signer);
+      const withdrawTx = await vaultContract.withdraw(parsedShares, address, address);
+      await withdrawTx.wait();
+      setStatus('Withdraw successful!');
     } catch (err: any) {
       console.error(err);
       setStatus(`Error: ${err.reason || err.message}`);
@@ -54,8 +73,9 @@ export default function VaultInteraction() {
         <p>DAI: {daiAddress}</p>
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700">Amount (DAI)</label>
+        <label htmlFor="vault-amount" className="block text-sm font-medium text-slate-700">Amount (DAI)</label>
         <input
+          id="vault-amount"
           type="text"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
@@ -65,6 +85,7 @@ export default function VaultInteraction() {
       </div>
       <div className="flex space-x-3">
         <button onClick={handleDeposit} className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition">Deposit</button>
+        <button onClick={handleWithdraw} className="flex-1 bg-slate-200 text-slate-700 py-2 px-4 rounded-md hover:bg-slate-300 transition">Withdraw</button>
       </div>
       {status && <p className="text-xs text-slate-600 mt-2 font-mono">{status}</p>}
     </div>
