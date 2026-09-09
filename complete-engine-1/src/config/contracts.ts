@@ -5,5 +5,10 @@ export const STANDALONE_DAI_VAULT_ABI = [
   "function deposit(uint256 amount) external",
   "function withdraw(uint256 amount) external",
   "function balanceOf(address account) view returns (uint256)",
-  "function totalSupply() view returns (uint256)"
+  "function totalSupply() view returns (uint256)",
+  "function reserveTarget() view returns (uint256)",
+  "function reserveThreshold() view returns (uint256)",
+  "function reserveBalance() view returns (uint256)",
+  "function needsReplenishment() view returns (bool)",
+  "function replenishReserve() external"
 ];

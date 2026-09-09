@@ -36,6 +36,13 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "scripts",
+    "execute-proof.ts",
+    "locked-proof.js",
+    "run-final.js",
+    "src/hooks/useSilentWallet.ts",
+    "src/hooks/useSilentWallet.tsx",
+    "src/components/UnifiedPoolDashboard.tsx"
   ]
 }

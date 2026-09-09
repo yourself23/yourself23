@@ -5,7 +5,11 @@ import { ethers } from 'ethers';
 const VAULT_ABI = [
   "function deposit(uint256 assets, address receiver) external returns (uint256 shares)",
   "function withdraw(uint256 shares, address receiver, address owner) external returns (uint256 assets)",
-  "function balanceOfe(address account) view returns (uint256)"
+  "function reserveTarget() view returns (uint256)",
+  "function reserveThreshold() view returns (uint256)",
+  "function reserveBalance() view returns (uint256)",
+  "function needsReplenishment() view returns (bool)",
+  "function replenishReserve() external"
 ];
 
 const ERC20_ABI = [
@@ -42,6 +46,25 @@ export default function VaultInteraction() {
       const depositTx = await vaultContract.deposit(parsedAmount, address);
       await depositTx.wait();
       setStatus('Deposit successful!');
+    } catch (err: any) {
+      console.error(err);
+      setStatus(`Error: ${err.reason || err.message}`);
+    }
+  }
+
+  async function handleReplenish() {
+    try {
+      setStatus('Checking reserve...');
+      const signer = await getSigner();
+      const vaultContract = new ethers.Contract(vaultAddress, VAULT_ABI, signer);
+      const needsReplenishment = await vaultContract.needsReplenishment();
+      if (needsReplenishment) {
+        throw new Error('Reserve is below its threshold; the contract reserve must be funded before replenishing.');
+      }
+      setStatus('Marking reserve replenished...');
+      const replenishTx = await vaultContract.replenishReserve();
+      await replenishTx.wait();
+      setStatus('Reserve is healthy.');
     } catch (err: any) {
       console.error(err);
       setStatus(`Error: ${err.reason || err.message}`);
@@ -87,6 +110,7 @@ export default function VaultInteraction() {
         <button onClick={handleDeposit} className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition">Deposit</button>
         <button onClick={handleWithdraw} className="flex-1 bg-slate-200 text-slate-700 py-2 px-4 rounded-md hover:bg-slate-300 transition">Withdraw</button>
       </div>
+      <button onClick={handleReplenish} className="w-full border border-emerald-200 text-emerald-700 py-2 px-4 rounded-md hover:bg-emerald-50 transition">Auto-replenish reserve</button>
       {status && <p className="text-xs text-slate-600 mt-2 font-mono">{status}</p>}
     </div>
   );
