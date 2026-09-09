@@ -10,8 +10,15 @@ async function main() {
   const deployer = signers[0];
   console.log("Deploying StandaloneDaiVault with account:", deployer.address);
 
+  const tokenAddress = process.env.NEXT_PUBLIC_USDC_CONTRACT || "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913";
+  const reserveTarget = process.env.RESERVE_TARGET || "0";
+  const reserveThreshold = process.env.RESERVE_THRESHOLD || "0";
+  if (BigInt(reserveThreshold) > BigInt(reserveTarget)) {
+    throw new Error("RESERVE_THRESHOLD must be less than or equal to RESERVE_TARGET");
+  }
+
   const StandaloneDaiVault = await ethers.getContractFactory("StandaloneDaiVault");
-  const vault = await StandaloneDaiVault.deploy();
+  const vault = await StandaloneDaiVault.deploy(tokenAddress, reserveTarget, reserveThreshold);
   await vault.waitForDeployment();
 
   const vaultAddress = await vault.getAddress();
