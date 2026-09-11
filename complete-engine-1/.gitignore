@@ -1,4 +1,16 @@
-.vercel
-.env*
+# Next.js build cache and output
+.next/
+out/
+build/
+
+# Local production environment configs
+.env*.local
+.env
+
+# Dependencies
 node_modules/
-node_modules/
+jspm_packages/
+
+# System logs and storage dumps
+*.log
+.DS_Store
